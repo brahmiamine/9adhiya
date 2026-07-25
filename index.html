@@ -324,7 +324,7 @@ function defaultData(){
     ]},
     { id:'khobz', name:'خبز و حبوب', collapsed:false, items:[
       mk('خبز'), mk('مقرونة'), mk('رز'), mk('كسكسي'), mk('فرينة'), mk('سميد'),
-      mk('لوبيا'), mk('حمص'), mk('خبز تركي'), mk('سكالوب بريك')
+      mk('لوبيا'), mk('حمص'), mk('خبز تركي'), mk('سكالوب بريك'), mk('نواصر')
     ]},
     { id:'monadhifat', name:'منظفات', collapsed:true, items:[
       mk('صابون يدين'), mk('معجون الأسنان'), mk('مناديل صغيرة'), mk('مناديل كبيرة'), mk('جافال'),
@@ -333,7 +333,7 @@ function defaultData(){
     { id:'okhra', name:'حوايج أخرى', collapsed:true, items:[
       mk('زيت الزيتون'), mk('ملح'), mk('سكر'), mk('قهوة'), mk('تاي'), mk('هريسة'),
       mk('زيتون اكحل'), mk('زيتون اخضر'), mk('عسل'), mk('عصير'), mk('قازوز'), mk('حكة هريسة'), mk('حكة طماطم'),
-      mk('نواصر'), mk('شكلاطو'), mk('لوز')
+      mk('شكلاطو'), mk('لوز')
     ]}
   ];
 }
@@ -354,8 +354,8 @@ function ensureQty(d){
 
 function addMissingDefaults(d){
   const additions = {
-    'okhra': ['زيتون اكحل','زيتون اخضر','عسل','عصير','قازوز','حكة هريسة','حكة طماطم','نواصر','شكلاطو','لوز'],
-    'khobz': ['لوبيا','حمص','خبز تركي','سكالوب بريك'],
+    'okhra': ['زيتون اكحل','زيتون اخضر','عسل','عصير','قازوز','حكة هريسة','حكة طماطم','شكلاطو','لوز'],
+    'khobz': ['لوبيا','حمص','خبز تركي','سكالوب بريك','نواصر'],
     'lham': ['كبدة','لحم مفروم','لحم بقري','لحم دجاج','تن','سردينه','شفرات','سومون'],
     'ghalla': ['أناناس','مانغا','بطيخ'],
     'khodhra': ['فلفل حار','فلفل حلو','فلفل احمر','جلبانة'],
@@ -451,6 +451,21 @@ function migrateNames(d){
       changed = true;
     }
   });
+
+  const moves = [{ name:'نواصر', from:'okhra', to:'khobz' }];
+  moves.forEach(({name, from, to})=>{
+    const fromCat = d.find(c=> c.id === from);
+    const toCat = d.find(c=> c.id === to);
+    if(!fromCat || !toCat) return;
+    const idx = fromCat.items.findIndex(i=> i.name === name);
+    if(idx === -1) return;
+    const [moved] = fromCat.items.splice(idx, 1);
+    if(!toCat.items.some(i=> i.name === name)){
+      toCat.items.push(moved);
+    }
+    changed = true;
+  });
+
   return changed;
 }
 
