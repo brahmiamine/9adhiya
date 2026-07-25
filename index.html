@@ -462,13 +462,18 @@ function render(){
       main.appendChild(div);
     } else {
       const clearRow = document.createElement('div');
-      clearRow.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
-      clearRow.innerHTML = `<button id="clearBasketBtn" style="border:1px solid var(--paprika-600);background:#fff6f0;color:var(--paprika-600);font-weight:800;font-size:13.5px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;">فرّغ القفة 🗑</button>`;
+      clearRow.style.cssText = 'display:flex;justify-content:space-between;gap:8px;margin-bottom:12px;';
+      clearRow.innerHTML = `
+        <button id="shareBasketBtn" style="border:1px solid var(--teal-700);background:#eaf5f4;color:var(--teal-700);font-weight:800;font-size:13.5px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;">شارك القفة 📤</button>
+        <button id="clearBasketBtn" style="border:1px solid var(--paprika-600);background:#fff6f0;color:var(--paprika-600);font-weight:800;font-size:13.5px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;">فرّغ القفة 🗑</button>`;
       main.appendChild(clearRow);
       clearRow.querySelector('#clearBasketBtn').addEventListener('click', ()=>{
         data.forEach(cat=> cat.items.forEach(i=> i.checked=false));
         persist();
         render();
+      });
+      clearRow.querySelector('#shareBasketBtn').addEventListener('click', ()=>{
+        shareBasket(buildShareText(checkedItems));
       });
 
       const wrap = document.createElement('div');
@@ -566,6 +571,31 @@ function toggleItem(item){
   item.checked = !item.checked;
   persist();
   render();
+}
+
+function buildShareText(checkedItems){
+  const lines = checkedItems.map(({item})=>{
+    const emoji = EMOJI_MAP[item.name];
+    return `- ${emoji ? emoji+' ' : ''}${item.name}`;
+  });
+  return `🧺 قفتي للتسوق:\n${lines.join('\n')}`;
+}
+
+async function shareBasket(text){
+  if(navigator.share){
+    try{
+      await navigator.share({ text, title: 'قفتي للتسوق' });
+      return;
+    }catch(e){
+      if(e.name === 'AbortError') return;
+    }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('تم نسخ القائمة، تنجم تلصقها و تبعثها لصاحبك');
+  }catch(e){
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
 }
 
 document.getElementById('tabAll').addEventListener('click', ()=>{
