@@ -68,6 +68,23 @@
     margin:0;
     line-height:1.5;
   }
+  .search-wrap{
+    padding:14px 16px 0;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .search-wrap input{
+    width:100%;
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:12px;
+    padding:11px 14px;
+    font-family:'Cairo',sans-serif;
+    font-size:14.5px;
+    background:rgba(255,255,255,0.12);
+    color:#fbf6e8;
+  }
+  .search-wrap input::placeholder{ color:#d8e6e4; }
+  .search-wrap input:focus{ outline:2px solid var(--ochre-500); outline-offset:1px; background:rgba(255,255,255,0.18); }
   .tabs{
     display:flex;
     gap:8px;
@@ -286,6 +303,9 @@
   <span class="eyebrow">🧺 قفتي للتسوق</span>
   <h1>قائمة الشراء</h1>
   <p class="subtitle">اختار اللي حاجتك فيه من القائمة، اعمل قفتك، و روح تسوق. القائمة تبقى عندك للمرة الجاية.</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن حاجة..." />
+  </div>
   <div class="tabs">
     <div class="tab active" data-tab="all" id="tabAll">القائمة الكاملة</div>
     <div class="tab" data-tab="basket" id="tabBasket">قفتي (<span id="basketCount">0</span>)</div>
@@ -317,14 +337,14 @@ function defaultData(){
     { id:'lham', name:'لحم و دجاج و عضم', collapsed:false, items:[
       mk('دجاج'), mk('لحم'), mk('حوت'), mk('عضم'),
       mk('كبدة'), mk('لحم مفروم'), mk('لحم بقري'), mk('لحم دجاج'),
-      mk('تن'), mk('سردينه'), mk('شفرات'), mk('سومون')
+      mk('تن'), mk('سردينه'), mk('شفرات'), mk('سومون'), mk('سكالوب')
     ]},
     { id:'halib', name:'حليب و مشتقاتو', collapsed:false, items:[
       mk('حليب'), mk('جبن مرحي'), mk('زبدة'), mk('ياغورت'), mk('لبن'), mk('فرماج'), mk('متزارلا'), mk('كرام فراش')
     ]},
     { id:'khobz', name:'خبز و حبوب', collapsed:false, items:[
       mk('خبز'), mk('مقرونة'), mk('رز'), mk('كسكسي'), mk('فرينة'), mk('سميد'),
-      mk('لوبيا'), mk('حمص'), mk('خبز تركي'), mk('سكالوب بريك'), mk('نواصر')
+      mk('خبز تركي'), mk('بريك'), mk('نواصر')
     ]},
     { id:'monadhifat', name:'منظفات', collapsed:true, items:[
       mk('صابون يدين'), mk('معجون الأسنان'), mk('مناديل صغيرة'), mk('مناديل كبيرة'), mk('جافال'),
@@ -336,7 +356,7 @@ function defaultData(){
       mk('شكلاطو')
     ]},
     { id:'moksarat', name:'مكسرات', collapsed:true, items:[
-      mk('لوز'), mk('جوز'), mk('فستق'), mk('كاوكاو'), mk('بندق')
+      mk('لوز'), mk('جوز'), mk('فستق'), mk('كاوكاو'), mk('بندق'), mk('لوبيا'), mk('حمص')
     ]}
   ];
 }
@@ -369,13 +389,13 @@ function ensureCategories(d){
 function addMissingDefaults(d){
   const additions = {
     'okhra': ['زيتون اكحل','زيتون اخضر','عسل','عصير','قازوز','حكة هريسة','حكة طماطم','شكلاطو'],
-    'khobz': ['لوبيا','حمص','خبز تركي','سكالوب بريك','نواصر'],
-    'lham': ['كبدة','لحم مفروم','لحم بقري','لحم دجاج','تن','سردينه','شفرات','سومون'],
+    'khobz': ['خبز تركي','بريك','نواصر'],
+    'lham': ['كبدة','لحم مفروم','لحم بقري','لحم دجاج','تن','سردينه','شفرات','سومون','سكالوب'],
     'ghalla': ['أناناس','مانغا','بطيخ'],
     'khodhra': ['فلفل حار','فلفل حلو','فلفل احمر','جلبانة'],
     'halib': ['فرماج','متزارلا','كرام فراش'],
     'monadhifat': ['لسيف الغسالة','بارفان الغسالة','بارفان الدار','بارفان الأرضية'],
-    'moksarat': ['لوز','جوز','فستق','كاوكاو','بندق']
+    'moksarat': ['لوز','جوز','فستق','كاوكاو','بندق','لوبيا','حمص']
   };
   let changed = false;
   Object.keys(additions).forEach(catId=>{
@@ -393,6 +413,7 @@ function addMissingDefaults(d){
 
 let data = null;
 let activeTab = 'all';
+let searchQuery = '';
 
 const EMOJI_MAP = {
   'طماطم':'🍅', 'بصل':'🧅', 'فلفل':'🫑', 'فقوس':'🥒', 'سفنارية':'🥕',
@@ -402,7 +423,7 @@ const EMOJI_MAP = {
   'دجاج':'🍗', 'لحم':'🥩', 'حوت':'🐟', 'عضم':'🥚',
   'لحم مفروم':'🥩', 'لحم بقري':'🥩', 'لحم دجاج':'🍗', 'تن':'🥫', 'سردينه':'🐟', 'شفرات':'🦐', 'سومون':'🐟',
   'حليب':'🥛', 'جبن مرحي':'🧀', 'زبدة':'🧈', 'فرماج':'🧀', 'متزارلا':'🧀', 'كرام فراش':'🥛',
-  'خبز':'🍞', 'مقرونة':'🍝', 'رز':'🍚', 'فرينة':'🌾', 'لوبيا':'🫘', 'خبز تركي':'🫓', 'سكالوب بريك':'🥟',
+  'خبز':'🍞', 'مقرونة':'🍝', 'رز':'🍚', 'فرينة':'🌾', 'لوبيا':'🫘', 'حمص':'🫘', 'خبز تركي':'🫓', 'بريك':'🥟', 'سكالوب':'🍗',
   'صابون يدين':'🧼', 'ديتارجان':'🧴', 'معجون الأسنان':'🪥', 'مناديل صغيرة':'🧻', 'مناديل كبيرة':'🧻', 'جافال':'🧴',
   'لسيف الغسالة':'🧴', 'بارفان الغسالة':'🌸', 'بارفان الدار':'🌸', 'بارفان الأرضية':'🌸',
   'زيت الزيتون':'🫒', 'ملح':'🧂', 'قهوة':'☕', 'تاي':'🍵', 'هريسة':'🌶️',
@@ -468,9 +489,29 @@ function migrateNames(d){
     }
   });
 
+  const khobzCat = d.find(c=> c.id === 'khobz');
+  const lhamCat = d.find(c=> c.id === 'lham');
+  if(khobzCat && lhamCat){
+    const scalIdx = khobzCat.items.findIndex(i=> i.name === 'سكالوب بريك');
+    if(scalIdx !== -1){
+      const old = khobzCat.items[scalIdx];
+      const brik = mk('بريك');
+      brik.checked = old.checked; brik.qty = old.qty;
+      khobzCat.items.splice(scalIdx, 1, brik);
+      if(!lhamCat.items.some(i=> i.name === 'سكالوب')){
+        const escalope = mk('سكالوب');
+        escalope.checked = old.checked; escalope.qty = old.qty;
+        lhamCat.items.push(escalope);
+      }
+      changed = true;
+    }
+  }
+
   const moves = [
     { name:'نواصر', from:'okhra', to:'khobz' },
-    { name:'لوز', from:'okhra', to:'moksarat' }
+    { name:'لوز', from:'okhra', to:'moksarat' },
+    { name:'لوبيا', from:'khobz', to:'moksarat' },
+    { name:'حمص', from:'khobz', to:'moksarat' }
   ];
   moves.forEach(({name, from, to})=>{
     const fromCat = d.find(c=> c.id === from);
@@ -522,9 +563,27 @@ function render(){
   main.innerHTML = '';
 
   if(activeTab === 'all'){
-    data.forEach(cat=>{
-      main.appendChild(renderCategory(cat));
-    });
+    const q = searchQuery.trim();
+    if(q){
+      let anyMatch = false;
+      data.forEach(cat=>{
+        const filtered = cat.items.filter(i=> i.name.includes(q));
+        if(filtered.length > 0){
+          anyMatch = true;
+          main.appendChild(renderCategory(cat, filtered, true));
+        }
+      });
+      if(!anyMatch){
+        const div = document.createElement('div');
+        div.className = 'empty';
+        div.innerHTML = `<span class="basket-icon">🔍</span><b>ما لقيتش حاجة</b>جرب كلمة أخرى`;
+        main.appendChild(div);
+      }
+    } else {
+      data.forEach(cat=>{
+        main.appendChild(renderCategory(cat));
+      });
+    }
   } else {
     const checkedItems = [];
     data.forEach(cat=>{
@@ -563,9 +622,10 @@ function render(){
   }
 }
 
-function renderCategory(cat){
+function renderCategory(cat, itemsOverride, forceOpen){
+  const items = itemsOverride || cat.items;
   const el = document.createElement('div');
-  el.className = 'cat' + (cat.collapsed ? ' collapsed' : '');
+  el.className = 'cat' + ((cat.collapsed && !forceOpen) ? ' collapsed' : '');
 
   const checkedCount = cat.items.filter(i=>i.checked).length;
 
@@ -584,7 +644,7 @@ function renderCategory(cat){
 
   const body = document.createElement('div');
   body.className = 'cat-body';
-  cat.items.forEach(item=>{
+  items.forEach(item=>{
     body.appendChild(renderItem(cat, item, false));
   });
 
@@ -714,6 +774,10 @@ document.getElementById('tabBasket').addEventListener('click', ()=>{
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   data.forEach(cat=> cat.items.forEach(i=> { i.checked=false; i.qty=1; }));
   persist();
+  render();
+});
+document.getElementById('searchInput').addEventListener('input', e=>{
+  searchQuery = e.target.value;
   render();
 });
 
