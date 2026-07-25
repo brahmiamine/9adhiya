@@ -404,9 +404,9 @@ function migrateNames(d){
 
 async function loadData(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    if(res && res.value){
-      data = JSON.parse(res.value);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      data = JSON.parse(raw);
       return;
     }
   }catch(e){
@@ -418,7 +418,7 @@ async function loadData(){
 
 async function persist(){
   try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(data), false);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }catch(e){
     console.error('تعذر حفظ القائمة', e);
   }
