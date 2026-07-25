@@ -633,12 +633,15 @@ function toggleItem(item){
 }
 
 function buildShareText(checkedItems){
+  const dateStr = new Date().toLocaleString('fr-FR', {
+    day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
   const lines = checkedItems.map(({item})=>{
     const emoji = EMOJI_MAP[item.name];
     const qty = item.qty || 1;
-    return `- ${emoji ? emoji+' ' : ''}${item.name}${qty > 1 ? ` × ${qty}` : ''}`;
+    return `- ${emoji ? emoji+' ' : ''}${item.name} X${qty}`;
   });
-  return `🧺 قفتي للتسوق:\n${lines.join('\n')}`;
+  return `🧺 قفتي للتسوق - ${dateStr}:\n${lines.join('\n')}`;
 }
 
 async function shareBasket(text){
