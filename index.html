@@ -333,7 +333,10 @@ function defaultData(){
     { id:'okhra', name:'حوايج أخرى', collapsed:true, items:[
       mk('زيت الزيتون'), mk('ملح'), mk('سكر'), mk('قهوة'), mk('تاي'), mk('هريسة'),
       mk('زيتون اكحل'), mk('زيتون اخضر'), mk('عسل'), mk('عصير'), mk('قازوز'), mk('حكة هريسة'), mk('حكة طماطم'),
-      mk('شكلاطو'), mk('لوز')
+      mk('شكلاطو')
+    ]},
+    { id:'moksarat', name:'مكسرات', collapsed:true, items:[
+      mk('لوز'), mk('جوز'), mk('فستق'), mk('كاوكاو'), mk('بندق')
     ]}
   ];
 }
@@ -352,15 +355,27 @@ function ensureQty(d){
   return changed;
 }
 
+function ensureCategories(d){
+  let changed = false;
+  defaultData().forEach(defCat=>{
+    if(!d.some(c=> c.id === defCat.id)){
+      d.push({ id: defCat.id, name: defCat.name, collapsed: defCat.collapsed, items: [] });
+      changed = true;
+    }
+  });
+  return changed;
+}
+
 function addMissingDefaults(d){
   const additions = {
-    'okhra': ['زيتون اكحل','زيتون اخضر','عسل','عصير','قازوز','حكة هريسة','حكة طماطم','شكلاطو','لوز'],
+    'okhra': ['زيتون اكحل','زيتون اخضر','عسل','عصير','قازوز','حكة هريسة','حكة طماطم','شكلاطو'],
     'khobz': ['لوبيا','حمص','خبز تركي','سكالوب بريك','نواصر'],
     'lham': ['كبدة','لحم مفروم','لحم بقري','لحم دجاج','تن','سردينه','شفرات','سومون'],
     'ghalla': ['أناناس','مانغا','بطيخ'],
     'khodhra': ['فلفل حار','فلفل حلو','فلفل احمر','جلبانة'],
     'halib': ['فرماج','متزارلا','كرام فراش'],
-    'monadhifat': ['لسيف الغسالة','بارفان الغسالة','بارفان الدار','بارفان الأرضية']
+    'monadhifat': ['لسيف الغسالة','بارفان الغسالة','بارفان الدار','بارفان الأرضية'],
+    'moksarat': ['لوز','جوز','فستق','كاوكاو','بندق']
   };
   let changed = false;
   Object.keys(additions).forEach(catId=>{
@@ -392,7 +407,8 @@ const EMOJI_MAP = {
   'لسيف الغسالة':'🧴', 'بارفان الغسالة':'🌸', 'بارفان الدار':'🌸', 'بارفان الأرضية':'🌸',
   'زيت الزيتون':'🫒', 'ملح':'🧂', 'قهوة':'☕', 'تاي':'🍵', 'هريسة':'🌶️',
   'زيتون اكحل':'🫒', 'زيتون اخضر':'🫒', 'عسل':'🍯', 'عصير':'🧃', 'قازوز':'🥤',
-  'حكة هريسة':'🫙', 'حكة طماطم':'🫙', 'شكلاطو':'🍫', 'لوز':'🌰'
+  'حكة هريسة':'🫙', 'حكة طماطم':'🫙', 'شكلاطو':'🍫', 'لوز':'🌰',
+  'جوز':'🌰', 'فستق':'🥜', 'كاوكاو':'🥜', 'بندق':'🌰'
 };
 
 function migrateNames(d){
@@ -452,7 +468,10 @@ function migrateNames(d){
     }
   });
 
-  const moves = [{ name:'نواصر', from:'okhra', to:'khobz' }];
+  const moves = [
+    { name:'نواصر', from:'okhra', to:'khobz' },
+    { name:'لوز', from:'okhra', to:'moksarat' }
+  ];
   moves.forEach(({name, from, to})=>{
     const fromCat = d.find(c=> c.id === from);
     const toCat = d.find(c=> c.id === to);
@@ -700,10 +719,11 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 
 (async ()=>{
   await loadData();
+  const catsAdded = ensureCategories(data);
   const renamed = migrateNames(data);
   const added = addMissingDefaults(data);
   const qtyFixed = ensureQty(data);
-  if(renamed || added || qtyFixed){
+  if(catsAdded || renamed || added || qtyFixed){
     await persist();
   }
   render();
