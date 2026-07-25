@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة الشراء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-950:#0b3634;
+    --teal-800:#0f4c4a;
+    --teal-700:#146663;
+    --sand-100:#f6efdc;
+    --sand-200:#efe4c8;
+    --ochre-500:#d9a62e;
+    --ochre-600:#bd8c1f;
+    --paprika-600:#a63a2e;
+    --paprika-700:#8a2f25;
+    --ink-900:#2a2420;
+    --ink-600:#5a5044;
+    --line:#e2d6b3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Cairo',sans-serif;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(217,166,46,0.10), transparent 45%),
+      radial-gradient(circle at 90% 92%, rgba(20,102,99,0.10), transparent 45%),
+      var(--sand-100);
+    color:var(--ink-900);
+    min-height:100vh;
+    padding-bottom:96px;
+  }
+  header{
+    background:linear-gradient(160deg, var(--teal-950), var(--teal-700));
+    padding:26px 20px 22px;
+    border-bottom:6px solid var(--ochre-500);
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.045) 0 10px, transparent 10px 20px);
+    pointer-events:none;
+  }
+  .eyebrow{
+    color:var(--ochre-500);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.5px;
+    display:block;
+    margin-bottom:4px;
+  }
+  h1{
+    font-family:'Amiri',serif;
+    color:#fbf6e8;
+    font-size:32px;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  .subtitle{
+    color:#d8e6e4;
+    font-size:14.5px;
+    margin:0;
+    line-height:1.5;
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    padding:14px 16px 0;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:11px 10px;
+    border-radius:14px 14px 0 0;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    background:rgba(255,255,255,0.08);
+    color:#eadfba;
+    border:1px solid transparent;
+    transition:.15s;
+  }
+  .tab.active{
+    background:var(--sand-100);
+    color:var(--teal-950);
+  }
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:18px 16px 20px;
+  }
+  .cat{
+    background:#fffdf6;
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:14px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(42,36,32,0.04);
+  }
+  .cat-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .cat-name{
+    font-weight:800;
+    font-size:15.5px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .cat-tile{
+    width:9px;height:9px;border-radius:2px;
+    background:var(--ochre-500);
+    transform:rotate(45deg);
+    flex:none;
+  }
+  .cat-count{
+    font-size:12.5px;
+    color:var(--ink-600);
+    font-weight:600;
+  }
+  .chev{
+    transition:transform .2s;
+    color:var(--ink-600);
+    font-size:13px;
+  }
+  .cat.collapsed .chev{ transform:rotate(-90deg); }
+  .cat.collapsed .cat-body{ display:none; }
+  .cat-body{
+    padding:2px 12px 12px;
+    border-top:1px solid var(--line);
+  }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:10px 6px;
+    border-bottom:1px dashed var(--line);
+  }
+  .item:last-of-type{ border-bottom:none; }
+  .check{
+    width:22px;height:22px;
+    border-radius:7px;
+    border:2px solid var(--teal-700);
+    flex:none;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    background:#fff;
+    transition:.15s;
+  }
+  .check.on{
+    background:var(--teal-700);
+    border-color:var(--teal-700);
+  }
+  .check.on::after{
+    content:"✓";
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+  }
+  .item-name{
+    flex:1;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .item.checked .item-name{
+    color:var(--ink-600);
+    text-decoration:line-through;
+    text-decoration-color:var(--ochre-600);
+  }
+  .del{
+    color:var(--paprika-600);
+    font-size:17px;
+    cursor:pointer;
+    padding:2px 6px;
+    opacity:.6;
+  }
+  .del:hover{ opacity:1; }
+  .add-row{
+    display:flex;
+    gap:8px;
+    padding:10px 6px 4px;
+  }
+  .add-row input{
+    flex:1;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:9px 12px;
+    font-family:'Cairo',sans-serif;
+    font-size:14px;
+    background:var(--sand-100);
+    color:var(--ink-900);
+  }
+  .add-row input:focus{ outline:2px solid var(--teal-700); outline-offset:1px; }
+  .add-row button{
+    border:none;
+    background:var(--ochre-500);
+    color:var(--teal-950);
+    font-weight:800;
+    font-size:14px;
+    padding:0 16px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .add-row button:active{ background:var(--ochre-600); }
+  .empty{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ink-600);
+  }
+  .empty .basket-icon{ font-size:40px; display:block; margin-bottom:10px; }
+  .empty b{ display:block; color:var(--ink-900); margin-bottom:4px; font-size:15.5px; }
+  .basket-list .item-name{ font-weight:700; }
+  footer{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:var(--teal-950);
+    border-top:3px solid var(--ochre-500);
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .footer-count{
+    color:#fbf6e8;
+    font-weight:700;
+    font-size:14.5px;
+  }
+  .footer-count span{ color:var(--ochre-500); }
+  .reset-btn{
+    border:1px solid rgba(255,255,255,0.35);
+    background:transparent;
+    color:#f1e9cf;
+    padding:9px 16px;
+    border-radius:10px;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .reset-btn:active{ background:rgba(255,255,255,0.1); }
+  .loading{ text-align:center; padding:60px 20px; color:var(--ink-600); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">🧺 قفتي للتسوق</span>
+  <h1>قائمة الشراء</h1>
+  <p class="subtitle">اختار اللي حاجتك فيه من القائمة، اعمل قفتك، و روح تسوق. القائمة تبقى عندك للمرة الجاية.</p>
+  <div class="tabs">
+    <div class="tab active" data-tab="all" id="tabAll">القائمة الكاملة</div>
+    <div class="tab" data-tab="basket" id="tabBasket">قفتي (<span id="basketCount">0</span>)</div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="loading">قاعد نجيب القائمة تاعك…</div>
+</main>
+
+<footer>
+  <div class="footer-count">في القفة: <span id="footCount">0</span> حاجة</div>
+  <button class="reset-btn" id="resetBtn">قفة جديدة</button>
+</footer>
+
+<script>
+const STORAGE_KEY = 'qaimat-shira-data-v1';
+
+function defaultData(){
+  return [
+    { id:'khodhra', name:'خضرة', collapsed:false, items:[
+      mk('طماطم'), mk('بصل'), mk('فلفل'), mk('فقوس'), mk('سفنارية'),
+      mk('البطاطا'), mk('الثوم'), mk('الكرافس'), mk('الخس'), mk('قرع احمر'), mk('قرع اخضر')
+    ]},
+    { id:'ghalla', name:'غلة', collapsed:false, items:[
+      mk('تفاح'), mk('بنان'), mk('برتقان'), mk('عنب'), mk('دلاع'), mk('فراز')
+    ]},
+    { id:'lham', name:'لحم و دجاج و عضم', collapsed:false, items:[
+      mk('دجاج'), mk('لحم'), mk('حوت'), mk('عضم'),
+      mk('كبدة'), mk('لحم مفروم'), mk('لحم بقري'), mk('لحم دجاج')
+    ]},
+    { id:'halib', name:'حليب و مشتقاتو', collapsed:false, items:[
+      mk('حليب'), mk('جبن'), mk('زبدة'), mk('ياغورت'), mk('لبن')
+    ]},
+    { id:'khobz', name:'خبز و حبوب', collapsed:false, items:[
+      mk('خبز'), mk('مكرونة'), mk('رز'), mk('كسكسي'), mk('فرينة'), mk('سميدة'),
+      mk('لوبيا'), mk('حمص')
+    ]},
+    { id:'monadhifat', name:'منظفات', collapsed:true, items:[
+      mk('صابون يدين'), mk('معجون الأسنان'), mk('مناديل صغيرة'), mk('مناديل كبيرة'), mk('جافال')
+    ]},
+    { id:'okhra', name:'حوايج أخرى', collapsed:true, items:[
+      mk('زيت الزيتون'), mk('ملح'), mk('سكر'), mk('قهوة'), mk('تاي'), mk('هريسة'),
+      mk('زيتون اكحل'), mk('زيتون اخضر')
+    ]}
+  ];
+}
+function mk(name){
+  return { id: 'i'+Math.random().toString(36).slice(2,9), name, checked:false };
+}
+
+function addMissingDefaults(d){
+  const additions = {
+    'okhra': ['زيتون اكحل','زيتون اخضر'],
+    'khobz': ['لوبيا','حمص'],
+    'lham': ['كبدة','لحم مفروم','لحم بقري','لحم دجاج']
+  };
+  let changed = false;
+  Object.keys(additions).forEach(catId=>{
+    const cat = d.find(c=> c.id === catId);
+    if(!cat) return;
+    additions[catId].forEach(name=>{
+      if(!cat.items.some(i=> i.name === name)){
+        cat.items.push(mk(name));
+        changed = true;
+      }
+    });
+  });
+  return changed;
+}
+
+let data = null;
+let activeTab = 'all';
+
+const EMOJI_MAP = {
+  'طماطم':'🍅', 'بصل':'🧅', 'فلفل':'🫑', 'فقوس':'🥒', 'سفنارية':'🥕',
+  'البطاطا':'🥔', 'الثوم':'🧄', 'الكرافس':'🥬', 'الخس':'🥬',
+  'قرع احمر':'🎃', 'قرع اخضر':'🥒',
+  'تفاح':'🍎', 'بنان':'🍌', 'برتقان':'🍊', 'عنب':'🍇', 'دلاع':'🍉', 'فراز':'🍓',
+  'دجاج':'🍗', 'لحم':'🥩', 'حوت':'🐟', 'عضم':'🥚',
+  'لحم مفروم':'🥩', 'لحم بقري':'🥩', 'لحم دجاج':'🍗',
+  'حليب':'🥛', 'جبن':'🧀', 'زبدة':'🧈',
+  'خبز':'🍞', 'مكرونة':'🍝', 'رز':'🍚', 'فرينة':'🌾', 'لوبيا':'🫘',
+  'صابون يدين':'🧼', 'ديتارجان':'🧴', 'معجون الأسنان':'🪥', 'مناديل صغيرة':'🧻', 'مناديل كبيرة':'🧻', 'جافال':'🧴',
+  'زيت الزيتون':'🫒', 'ملح':'🧂', 'قهوة':'☕', 'تاي':'🍵', 'هريسة':'🌶️',
+  'زيتون اكحل':'🫒', 'زيتون اخضر':'🫒'
+};
+
+function migrateNames(d){
+  const renameMap = {
+    'خيار':'فقوس',
+    'الجزر':'سفنارية',
+    'فراولة':'فراز',
+    'سمك':'حوت',
+    'بيض':'عضم',
+    'موز':'بنان',
+    'ديتارجان':'صابون يدين'
+  };
+  let changed = false;
+  d.forEach(cat=>{
+    cat.items.forEach(item=>{
+      if(renameMap[item.name]){
+        item.name = renameMap[item.name];
+        changed = true;
+      }
+    });
+    const idx = cat.items.findIndex(i=> i.name === 'القرعة');
+    if(idx !== -1){
+      const old = cat.items[idx];
+      cat.items.splice(idx, 1,
+        mk('قرع احمر'),
+        mk('قرع اخضر')
+      );
+      if(old.checked){
+        cat.items[idx].checked = true;
+        cat.items[idx+1].checked = true;
+      }
+      changed = true;
+    }
+    const napIdx = cat.items.findIndex(i=> i.name === 'مناديل');
+    if(napIdx !== -1){
+      const oldNap = cat.items[napIdx];
+      cat.items.splice(napIdx, 1,
+        mk('مناديل صغيرة'),
+        mk('مناديل كبيرة')
+      );
+      if(oldNap.checked){
+        cat.items[napIdx].checked = true;
+        cat.items[napIdx+1].checked = true;
+      }
+      changed = true;
+    }
+    const soapIdx = cat.items.findIndex(i=> i.name === 'صابون');
+    if(soapIdx !== -1){
+      cat.items.splice(soapIdx, 1);
+      changed = true;
+    }
+  });
+  return changed;
+}
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      data = JSON.parse(res.value);
+      return;
+    }
+  }catch(e){
+    // key doesn't exist yet
+  }
+  data = defaultData();
+  await persist();
+}
+
+async function persist(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(data), false);
+  }catch(e){
+    console.error('تعذر حفظ القائمة', e);
+  }
+}
+
+function totalChecked(){
+  return data.reduce((sum,c)=> sum + c.items.filter(i=>i.checked).length, 0);
+}
+
+function render(){
+  document.getElementById('basketCount').textContent = totalChecked();
+  document.getElementById('footCount').textContent = totalChecked();
+
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  if(activeTab === 'all'){
+    data.forEach(cat=>{
+      main.appendChild(renderCategory(cat));
+    });
+  } else {
+    const checkedItems = [];
+    data.forEach(cat=>{
+      cat.items.filter(i=>i.checked).forEach(i=> checkedItems.push({cat, item:i}));
+    });
+    if(checkedItems.length === 0){
+      const div = document.createElement('div');
+      div.className = 'empty';
+      div.innerHTML = `<span class="basket-icon">🧺</span><b>قفتك فارغة</b>ارجع للقائمة الكاملة و اختار اللي حاجتك فيه`;
+      main.appendChild(div);
+    } else {
+      const clearRow = document.createElement('div');
+      clearRow.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
+      clearRow.innerHTML = `<button id="clearBasketBtn" style="border:1px solid var(--paprika-600);background:#fff6f0;color:var(--paprika-600);font-weight:800;font-size:13.5px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;">فرّغ القفة 🗑</button>`;
+      main.appendChild(clearRow);
+      clearRow.querySelector('#clearBasketBtn').addEventListener('click', ()=>{
+        data.forEach(cat=> cat.items.forEach(i=> i.checked=false));
+        persist();
+        render();
+      });
+
+      const wrap = document.createElement('div');
+      wrap.className = 'cat basket-list';
+      wrap.innerHTML = `<div class="cat-body" style="border-top:none;padding-top:12px;"></div>`;
+      const body = wrap.querySelector('.cat-body');
+      checkedItems.forEach(({cat,item})=>{
+        body.appendChild(renderItem(cat, item, true));
+      });
+      main.appendChild(wrap);
+    }
+  }
+}
+
+function renderCategory(cat){
+  const el = document.createElement('div');
+  el.className = 'cat' + (cat.collapsed ? ' collapsed' : '');
+
+  const checkedCount = cat.items.filter(i=>i.checked).length;
+
+  const head = document.createElement('div');
+  head.className = 'cat-head';
+  head.innerHTML = `
+    <div class="cat-name"><span class="cat-tile"></span>${cat.name}</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="cat-count">${checkedCount}/${cat.items.length}</span>
+      <span class="chev">▾</span>
+    </div>`;
+  head.addEventListener('click', ()=>{
+    cat.collapsed = !cat.collapsed;
+    render();
+  });
+
+  const body = document.createElement('div');
+  body.className = 'cat-body';
+  cat.items.forEach(item=>{
+    body.appendChild(renderItem(cat, item, false));
+  });
+
+  const addRow = document.createElement('div');
+  addRow.className = 'add-row';
+  addRow.innerHTML = `<input type="text" placeholder="زيد حاجة..." /><button>زيد</button>`;
+  const input = addRow.querySelector('input');
+  const btn = addRow.querySelector('button');
+  const doAdd = ()=>{
+    const val = input.value.trim();
+    if(!val) return;
+    cat.items.push(mk(val));
+    persist();
+    render();
+  };
+  btn.addEventListener('click', doAdd);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') doAdd(); });
+  body.appendChild(addRow);
+
+  el.appendChild(head);
+  el.appendChild(body);
+  return el;
+}
+
+function renderItem(cat, item, inBasket){
+  const row = document.createElement('div');
+  row.className = 'item' + (item.checked ? ' checked' : '');
+
+  const check = document.createElement('div');
+  check.className = 'check' + (item.checked ? ' on' : '');
+  check.addEventListener('click', ()=> toggleItem(item));
+
+  const name = document.createElement('div');
+  name.className = 'item-name';
+  const emoji = EMOJI_MAP[item.name];
+  name.textContent = emoji ? `${emoji} ${item.name}` : item.name;
+  name.addEventListener('click', ()=> toggleItem(item));
+
+  row.appendChild(check);
+  row.appendChild(name);
+
+  if(!inBasket){
+    const del = document.createElement('div');
+    del.className = 'del';
+    del.textContent = '×';
+    del.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      cat.items = cat.items.filter(i=> i.id !== item.id);
+      persist();
+      render();
+    });
+    row.appendChild(del);
+  }
+
+  return row;
+}
+
+function toggleItem(item){
+  item.checked = !item.checked;
+  persist();
+  render();
+}
+
+document.getElementById('tabAll').addEventListener('click', ()=>{
+  activeTab = 'all';
+  document.getElementById('tabAll').classList.add('active');
+  document.getElementById('tabBasket').classList.remove('active');
+  render();
+});
+document.getElementById('tabBasket').addEventListener('click', ()=>{
+  activeTab = 'basket';
+  document.getElementById('tabBasket').classList.add('active');
+  document.getElementById('tabAll').classList.remove('active');
+  render();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  data.forEach(cat=> cat.items.forEach(i=> i.checked=false));
+  persist();
+  render();
+});
+
+(async ()=>{
+  await loadData();
+  const renamed = migrateNames(data);
+  const added = addMissingDefaults(data);
+  if(renamed || added){
+    await persist();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
