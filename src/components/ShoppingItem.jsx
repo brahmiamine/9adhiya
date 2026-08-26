@@ -4,7 +4,7 @@ export default function ShoppingItem({ categoryId, item, inBasket = false, onTog
   const controlId = `item-${categoryId}-${item.id}`
 
   return (
-    <div className={`item${item.checked ? ' item--checked' : ''}`}>
+    <div className="item">
       <input
         className="item__check"
         id={controlId}
