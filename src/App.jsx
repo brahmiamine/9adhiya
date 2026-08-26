@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import BasketView from './components/BasketView.jsx'
 import CategoryCard from './components/CategoryCard.jsx'
 import { STORAGE_KEY, buildShareText, countChecked, createItem, getCheckedItems, loadData, searchCategories } from './lib/shoppingList.js'
@@ -11,11 +11,31 @@ function readInitialData() {
   }
 }
 
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </svg>
+  )
+}
+
+function BasketIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 9h16l-1.4 10H5.4L4 9Z" />
+      <path d="m8 9 4-5 4 5M9 13v3m6-3v3" />
+    </svg>
+  )
+}
+
 export default function App() {
   const [data, setData] = useState(readInitialData)
-  const [activeTab, setActiveTab] = useState('all')
+  const [activeView, setActiveView] = useState('list')
+  const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [status, setStatus] = useState('')
+  const searchInputRef = useRef(null)
 
   const checkedCount = useMemo(() => countChecked(data), [data])
   const checkedItems = useMemo(() => getCheckedItems(data), [data])
@@ -34,6 +54,10 @@ export default function App() {
     const timeout = window.setTimeout(() => setStatus(''), 3200)
     return () => window.clearTimeout(timeout)
   }, [status])
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus()
+  }, [searchOpen])
 
   function updateItem(categoryId, itemId, updater) {
     setData((current) => current.map((category) => category.id !== categoryId
@@ -93,41 +117,49 @@ export default function App() {
     }
   }
 
-  function handleTabKey(event) {
-    const nextTab = event.key === 'ArrowLeft' || event.key === 'End'
-      ? 'basket'
-      : event.key === 'ArrowRight' || event.key === 'Home'
-        ? 'all'
-        : null
-    if (!nextTab) return
-    event.preventDefault()
-    setActiveTab(nextTab)
-    document.getElementById(`tab-${nextTab}`)?.focus()
+  function toggleSearch() {
+    setActiveView('list')
+    setSearchOpen((open) => {
+      if (open) setSearchQuery('')
+      return !open
+    })
+  }
+
+  function toggleBasket() {
+    setActiveView((view) => view === 'basket' ? 'list' : 'basket')
+    setSearchOpen(false)
+    setSearchQuery('')
   }
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__inner">
-          <div className="brand-line"><span aria-hidden="true">🧺</span> قفتي للتسوق</div>
-          <h1>قائمة الشراء</h1>
-          <p>اختار اللي حاجتك فيه من القائمة، اعمل قفتك، و روح تسوق. القائمة تبقى عندك للمرة الجاية.</p>
-
-          <label className="search">
-            <span className="sr-only">ابحث في القائمة</span>
-            <span className="search__icon" aria-hidden="true">⌕</span>
-            <input type="search" value={searchQuery} onChange={(event) => { setSearchQuery(event.target.value); if (activeTab !== 'all') setActiveTab('all') }} placeholder="ابحث عن حاجة..." />
-          </label>
-
-          <div className="tabs" role="tablist" aria-label="اختار العرض" onKeyDown={handleTabKey}>
-            <button id="tab-all" className={`tab${activeTab === 'all' ? ' tab--active' : ''}`} type="button" role="tab" aria-selected={activeTab === 'all'} aria-controls="shopping-panel" onClick={() => setActiveTab('all')}>القائمة الكاملة</button>
-            <button id="tab-basket" className={`tab${activeTab === 'basket' ? ' tab--active' : ''}`} type="button" role="tab" aria-selected={activeTab === 'basket'} aria-controls="shopping-panel" onClick={() => setActiveTab('basket')}>قفتي <span className="tab__count">{checkedCount}</span></button>
+          <div className="app-header__row">
+            <h1><span aria-hidden="true">🧺</span> قفتي للتسوق</h1>
+            <div className="header-actions">
+              <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? 'سكر البحث' : 'ابحث في القائمة'} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
+                <SearchIcon />
+              </button>
+              <button className={`header-action${activeView === 'basket' ? ' header-action--active' : ''}`} type="button" aria-label={activeView === 'basket' ? 'ارجع للقائمة' : checkedCount > 0 ? `شوف القفة، فيها ${checkedCount} حاجة` : 'شوف القفة'} aria-controls="shopping-panel" aria-pressed={activeView === 'basket'} onClick={toggleBasket}>
+                <BasketIcon />
+                {checkedCount > 0 && <span className="header-action__count" aria-hidden="true">{checkedCount}</span>}
+              </button>
+            </div>
           </div>
+
+          {searchOpen && (
+            <label className="search" id="search-panel">
+              <span className="sr-only">ابحث في القائمة</span>
+              <span className="search__icon" aria-hidden="true"><SearchIcon /></span>
+              <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="ابحث عن حاجة..." />
+            </label>
+          )}
         </div>
       </header>
 
-      <main className="content" id="shopping-panel" role="tabpanel" tabIndex="0" aria-labelledby={activeTab === 'all' ? 'tab-all' : 'tab-basket'}>
-        {activeTab === 'all' ? (
+      <main className="content" id="shopping-panel">
+        {activeView === 'list' ? (
           visibleCategories.length > 0 ? visibleCategories.map(({ category, items, forceOpen }) => (
             <CategoryCard key={category.id} category={category} items={items} forceOpen={forceOpen} onToggleCategory={toggleCategory} onToggleItem={toggleItem} onDeleteItem={deleteItem} onAddItem={addItem} />
           )) : (
