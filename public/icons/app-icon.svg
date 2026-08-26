@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">قفتي للتسوق</title>
+  <desc id="description">قفة تسوق بلون ذهبي على خلفية خضراء</desc>
+  <rect width="512" height="512" fill="#0b3634"/>
+  <circle cx="256" cy="256" r="164" fill="#0f4c4a"/>
+  <path d="M168 226c8-63 42-102 88-102s80 39 88 102" fill="none" stroke="#f3c451" stroke-width="28" stroke-linecap="round"/>
+  <path d="M132 218h248l-25 177c-3 20-20 35-40 35H197c-20 0-37-15-40-35l-25-177Z" fill="#fff7df"/>
+  <path d="M190 272v96M256 272v96M322 272v96" fill="none" stroke="#0f6662" stroke-width="20" stroke-linecap="round"/>
+  <path d="M128 218h256" fill="none" stroke="#f3c451" stroke-width="26" stroke-linecap="round"/>
+</svg>
