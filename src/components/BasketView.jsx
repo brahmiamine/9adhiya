@@ -6,7 +6,7 @@ export default function BasketView({ checkedItems, onToggleItem, onQuantity, onC
       <div className="empty-state">
         <span className="empty-state__icon" aria-hidden="true">🧺</span>
         <h2>قفتك فارغة</h2>
-        <p>ارجع للقائمة الكاملة و اختار اللي حاجتك فيه</p>
+        <p>اختار اللي حاجتك فيه من القائمة</p>
       </div>
     )
   }
