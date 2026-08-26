@@ -131,12 +131,22 @@ export default function App() {
     setSearchQuery('')
   }
 
+  function showList() {
+    setActiveView('list')
+    setSearchOpen(false)
+    setSearchQuery('')
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__inner">
           <div className="app-header__row">
-            <h1><span aria-hidden="true">🧺</span> قفتي للتسوق</h1>
+            <h1>
+              <button className="app-title" type="button" onClick={showList} aria-label="ارجع لقائمة الحوايج">
+                <span aria-hidden="true">🧺</span> قفتي للتسوق
+              </button>
+            </h1>
             <div className="header-actions">
               <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? 'سكر البحث' : 'ابحث في القائمة'} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
                 <SearchIcon />
@@ -171,13 +181,6 @@ export default function App() {
       </main>
 
       {status && <div className="status" role="status" aria-live="polite">{status}</div>}
-
-      <footer className="bottom-bar">
-        <div className="bottom-bar__inner">
-          <div>في القفة: <strong>{checkedCount}</strong> حاجة</div>
-          <button type="button" onClick={clearBasket}>قفة جديدة</button>
-        </div>
-      </footer>
     </div>
   )
 }

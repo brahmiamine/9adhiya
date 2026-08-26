@@ -35,7 +35,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
   width: min(100%, 480px);
   min-height: 100vh;
   margin-inline: auto;
-  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
   background:
     radial-gradient(circle at 8% 12%, rgb(217 166 46 / 10%), transparent 28rem),
     radial-gradient(circle at 92% 88%, rgb(15 102 98 / 9%), transparent 30rem),
@@ -45,7 +45,10 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .app-header { color: #fffaf0; background: linear-gradient(145deg, var(--teal-950), var(--teal-700)); border-bottom: 5px solid var(--ochre-500); }
 .app-header__inner { width: 100%; padding: max(14px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 14px max(12px, env(safe-area-inset-left)); }
 .app-header__row { display: flex; min-height: 52px; align-items: center; gap: 12px; }
-.app-header h1 { display: flex; min-width: 0; align-items: center; gap: 8px; margin: 0; color: #f3c451; font-size: 1.125rem; line-height: 1.4; font-weight: 800; text-wrap: balance; }
+.app-header h1 { min-width: 0; margin: 0; font-size: 1.125rem; line-height: 1.4; text-wrap: balance; }
+.app-title { display: flex; min-height: 48px; align-items: center; gap: 8px; border: 0; border-radius: 10px; padding: 6px; color: #f3c451; background: transparent; font-weight: 800; cursor: pointer; }
+.app-title:hover { background: rgb(255 255 255 / 8%); }
+.app-title:active { background: rgb(255 255 255 / 14%); }
 .header-actions { display: flex; flex: none; gap: 6px; margin-inline-start: auto; }
 .header-action { position: relative; display: inline-flex; width: 48px; height: 48px; align-items: center; justify-content: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 12px; padding: 0; color: #fffaf0; background: rgb(255 255 255 / 8%); cursor: pointer; transition: color 180ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out; }
 .header-action:hover { background: rgb(255 255 255 / 14%); }
@@ -79,7 +82,6 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .item:last-child { border-bottom: 0; }
 .item__check { width: 26px; height: 26px; flex: none; margin: 0; accent-color: var(--teal-700); cursor: pointer; }
 .item__name { flex: 1; min-width: 0; padding-block: 4px; cursor: pointer; overflow-wrap: anywhere; }
-.item--checked .item__name { color: var(--ink-600); text-decoration: line-through; text-decoration-thickness: 1px; }
 .item__delete { width: 44px; height: 44px; flex: none; border: 0; border-radius: 8px; color: var(--paprika-600); background: transparent; font-size: 1.3rem; cursor: pointer; }
 .item__delete:hover { background: #faece8; }
 
@@ -108,13 +110,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .empty-state__icon { display: block; margin-bottom: 8px; color: var(--teal-700); font-size: 2.5rem; }
 .empty-state h2 { margin: 0 0 4px; color: var(--ink-900); font-size: 1.075rem; }
 .empty-state p { margin: 0; }
-.status { position: fixed; z-index: 30; inset-inline-start: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); width: min(calc(100% - 32px), 448px); translate: 50% 0; border-radius: 10px; padding: 10px 14px; color: #fffaf0; background: #153f3d; box-shadow: 0 4px 8px rgb(11 54 52 / 20%); text-align: center; font-size: 0.875rem; font-weight: 700; }
-
-.bottom-bar { position: fixed; z-index: 20; inset-inline: 0; bottom: 0; width: min(100%, 480px); margin-inline: auto; color: #fffaf0; background: var(--teal-950); box-shadow: inset 0 4px 0 var(--ochre-500); }
-.bottom-bar__inner { display: flex; width: 100%; min-height: 68px; align-items: center; justify-content: space-between; gap: 12px; padding: 10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); font-size: 0.875rem; font-weight: 700; }
-.bottom-bar strong { color: #f3c451; }
-.bottom-bar button { min-height: 44px; border: 1px solid rgb(255 255 255 / 45%); border-radius: 10px; padding: 8px 14px; color: #fffaf0; background: transparent; font-weight: 800; cursor: pointer; }
-.bottom-bar button:hover { background: rgb(255 255 255 / 10%); }
+.status { position: fixed; z-index: 30; inset-inline-start: 50%; bottom: max(18px, env(safe-area-inset-bottom)); width: min(calc(100% - 32px), 448px); translate: 50% 0; border-radius: 10px; padding: 10px 14px; color: #fffaf0; background: #153f3d; box-shadow: 0 4px 8px rgb(11 54 52 / 20%); text-align: center; font-size: 0.875rem; font-weight: 700; }
 
 @media (min-width: 421px) {
   .app-header__inner { padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); }
