@@ -101,6 +101,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .button:hover { filter: brightness(0.97); }
 .basket { padding: 12px; }
 .basket .item__name { font-weight: 700; }
+.basket .item__name--sexual-health { font-weight: 800; }
 
 .quantity { display: flex; flex: none; align-items: center; gap: 3px; direction: ltr; }
 .quantity__button { width: 44px; height: 44px; border: 1px solid var(--teal-700); border-radius: 8px; color: var(--teal-700); background: #fff; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
