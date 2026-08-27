@@ -1,14 +1,21 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { STORAGE_KEY, buildShareText, countChecked, createDefaultData, loadData, migrateData, searchCategories } from '../src/lib/shoppingList.js'
+import { STORAGE_KEY, buildShareText, countChecked, createDefaultData, isSexualHealthFood, loadData, migrateData, searchCategories } from '../src/lib/shoppingList.js'
 
-test('the default catalog preserves all eight categories and 89 items', () => {
+test('the default catalog preserves all eight categories and 105 items', () => {
   const data = createDefaultData()
   assert.equal(data.length, 8)
-  assert.equal(data.reduce((total, category) => total + category.items.length, 0), 89)
+  assert.equal(data.reduce((total, category) => total + category.items.length, 0), 105)
   assert.equal(countChecked(data), 0)
   assert.deepEqual(data.find((category) => category.id === 'monadhifat').items.slice(-2).map((item) => item.name), ['لنجات', 'فرشاة أسنان'])
-  assert.deepEqual(data.find((category) => category.id === 'moksarat').items.slice(-3).map((item) => item.name), ['قلوب قرع', 'اكاجو', 'سمسم'])
+  assert.deepEqual(data.find((category) => category.id === 'moksarat').items.slice(-5).map((item) => item.name), ['قلوب قرع', 'اكاجو', 'سمسم', 'بذور الشيا', 'بذور الكتان'])
+})
+
+test('foods supporting sexual and vascular health are highlighted', () => {
+  assert.equal(isSexualHealthFood('سبناخ'), true)
+  assert.equal(isSexualHealthFood('سومون'), true)
+  assert.equal(isSexualHealthFood('شوفان'), true)
+  assert.equal(isSexualHealthFood('سكر'), false)
 })
 
 test('legacy names and missing quantities are migrated without losing a checked item', () => {
@@ -21,8 +28,8 @@ test('legacy names and missing quantities are migrated without losing a checked 
   assert.equal(data.length, 8)
 })
 
-test('migration adds the latest cleaning and nut items to an existing saved list', () => {
-  const latestNames = new Set(['لنجات', 'فرشاة أسنان', 'قلوب قرع', 'اكاجو', 'سمسم'])
+test('migration adds the latest cleaning, nut, and healthy food items to an existing saved list', () => {
+  const latestNames = new Set(['لنجات', 'فرشاة أسنان', 'قلوب قرع', 'اكاجو', 'سمسم', 'باربة', 'توت', 'رمان', 'ماكرو', 'شوفان', 'عدس', 'ماء', 'بذور الشيا'])
   const previousData = createDefaultData().map((category) => ({
     ...category,
     items: category.items.filter((item) => !latestNames.has(item.name)),
