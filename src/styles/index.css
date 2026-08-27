@@ -82,6 +82,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .item:last-child { border-bottom: 0; }
 .item__check { width: 26px; height: 26px; flex: none; margin: 0; accent-color: var(--teal-700); cursor: pointer; }
 .item__name { flex: 1; min-width: 0; padding-block: 4px; cursor: pointer; overflow-wrap: anywhere; }
+.item__name--sexual-health { color: #0b5f55; font-weight: 800; }
+.item__health-marker { display: inline-flex; margin-inline-start: 7px; border-radius: 999px; padding: 2px 6px; color: #6b4900; background: #f6d46b; font-size: 0.72rem; line-height: 1.25; vertical-align: middle; }
 .item__delete { width: 44px; height: 44px; flex: none; border: 0; border-radius: 8px; color: var(--paprika-600); background: transparent; font-size: 1.3rem; cursor: pointer; }
 .item__delete:hover { background: #faece8; }
 
@@ -99,6 +101,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .button:hover { filter: brightness(0.97); }
 .basket { padding: 12px; }
 .basket .item__name { font-weight: 700; }
+.basket .item__name--sexual-health { font-weight: 800; }
 
 .quantity { display: flex; flex: none; align-items: center; gap: 3px; direction: ltr; }
 .quantity__button { width: 44px; height: 44px; border: 1px solid var(--teal-700); border-radius: 8px; color: var(--teal-700); background: #fff; font-size: 1.1rem; font-weight: 800; cursor: pointer; }

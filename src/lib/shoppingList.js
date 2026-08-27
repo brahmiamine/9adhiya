@@ -1,16 +1,16 @@
-import { CATEGORY_DEFINITIONS, EMOJI_MAP } from '../data/catalog.js'
+import { CATEGORY_DEFINITIONS, EMOJI_MAP, SEXUAL_HEALTH_FOODS } from '../data/catalog.js'
 
 export const STORAGE_KEY = 'qaimat-shira-data-v1'
 
 const EXTRA_DEFAULTS = {
-  okhra: ['زيتون اكحل', 'زيتون اخضر', 'عسل', 'عصير', 'قازوز', 'حكة هريسة', 'حكة طماطم', 'شكلاطو'],
-  khobz: ['خبز تركي', 'بريك', 'نواصر'],
-  lham: ['كبدة', 'لحم مفروم', 'لحم بقري', 'لحم دجاج', 'تن', 'سردينه', 'شفرات', 'سومون', 'سكالوب'],
-  ghalla: ['أناناس', 'مانغا', 'بطيخ'],
-  khodhra: ['فلفل حار', 'فلفل حلو', 'فلفل احمر', 'جلبانة'],
+  okhra: ['زيتون اكحل', 'زيتون اخضر', 'عسل', 'عصير', 'قازوز', 'حكة هريسة', 'حكة طماطم', 'شكلاطو', 'ماء'],
+  khobz: ['خبز تركي', 'بريك', 'نواصر', 'شوفان', 'رز كامل', 'خبز كامل', 'عدس', 'كينوا'],
+  lham: ['كبدة', 'لحم مفروم', 'لحم بقري', 'لحم دجاج', 'تن', 'سردينه', 'شفرات', 'سومون', 'سكالوب', 'ماكرو'],
+  ghalla: ['أناناس', 'مانغا', 'بطيخ', 'توت', 'رمان', 'كيوي', 'أفوكادو'],
+  khodhra: ['فلفل حار', 'فلفل حلو', 'فلفل احمر', 'جلبانة', 'باربة', 'بروكلي', 'كرنب'],
   halib: ['فرماج', 'متزارلا', 'كرام فراش'],
   monadhifat: ['لسيف الغسالة', 'بارفان الغسالة', 'بارفان الدار', 'بارفان الأرضية', 'لنجات', 'فرشاة أسنان'],
-  moksarat: ['لوز', 'جوز', 'فستق', 'كاوكاو', 'بندق', 'لوبيا', 'حمص', 'قلوب قرع', 'اكاجو', 'سمسم'],
+  moksarat: ['لوز', 'جوز', 'فستق', 'كاوكاو', 'بندق', 'لوبيا', 'حمص', 'قلوب قرع', 'اكاجو', 'سمسم', 'بذور الشيا', 'بذور الكتان'],
 }
 
 const RENAME_MAP = {
@@ -172,6 +172,10 @@ export function searchCategories(data, query) {
 
 export function formatItemName(name) {
   return EMOJI_MAP[name] ? `${EMOJI_MAP[name]} ${name}` : name
+}
+
+export function isSexualHealthFood(name) {
+  return SEXUAL_HEALTH_FOODS.has(name)
 }
 
 export function buildShareText(checkedItems, date = new Date()) {

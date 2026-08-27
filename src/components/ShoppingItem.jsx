@@ -1,7 +1,8 @@
-import { formatItemName } from '../lib/shoppingList.js'
+import { formatItemName, isSexualHealthFood } from '../lib/shoppingList.js'
 
 export default function ShoppingItem({ categoryId, item, inBasket = false, onToggle, onDelete, onQuantity }) {
   const controlId = `item-${categoryId}-${item.id}`
+  const isHighlighted = isSexualHealthFood(item.name)
 
   return (
     <div className="item">
@@ -12,7 +13,14 @@ export default function ShoppingItem({ categoryId, item, inBasket = false, onTog
         checked={item.checked}
         onChange={() => onToggle(categoryId, item.id)}
       />
-      <label className="item__name" htmlFor={controlId}>{formatItemName(item.name)}</label>
+      <label
+        className={`item__name${isHighlighted ? ' item__name--sexual-health' : ''}`}
+        htmlFor={controlId}
+        title={isHighlighted ? 'مفيد للصحة الجنسية والدورة الدموية ضمن غذاء متوازن' : undefined}
+      >
+        {formatItemName(item.name)}
+        {isHighlighted && <span className="item__health-marker" aria-label="مفيد للصحة الجنسية">★</span>}
+      </label>
 
       {inBasket ? (
         <div className="quantity" aria-label={`كمية ${item.name}`}>
