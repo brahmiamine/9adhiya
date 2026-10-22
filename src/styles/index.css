@@ -74,7 +74,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .category__name { display: flex; min-width: 0; align-items: center; gap: 10px; font-weight: 800; }
 .category__marker { width: 9px; height: 9px; flex: none; rotate: 45deg; border-radius: 2px; background: var(--ochre-500); }
 .category__meta { display: flex; flex: none; align-items: center; gap: 10px; color: var(--ink-600); font-size: 0.8125rem; font-weight: 700; direction: ltr; }
-.category__chevron { display: inline-block; font-size: 1rem; transition: rotate 180ms ease-out; }
+.category__chevron { display: inline-block; font-size: 0.9rem; transition: rotate 180ms ease-out; }
 .category__toggle[aria-expanded='false'] .category__chevron { rotate: 90deg; }
 .category__body { padding: 2px 8px 12px; border-top: 1px solid var(--line); }
 
@@ -113,7 +113,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 .empty-state__icon { display: block; margin-bottom: 8px; color: var(--teal-700); font-size: 2.5rem; }
 .empty-state h2 { margin: 0 0 4px; color: var(--ink-900); font-size: 1.075rem; }
 .empty-state p { margin: 0; }
-.status { position: fixed; z-index: 30; inset-inline-start: 50%; bottom: max(18px, env(safe-area-inset-bottom)); width: min(calc(100% - 32px), 448px); translate: 50% 0; border-radius: 10px; padding: 10px 14px; color: #fffaf0; background: #153f3d; box-shadow: 0 4px 8px rgb(11 54 52 / 20%); text-align: center; font-size: 0.875rem; font-weight: 700; }
+.status { position: fixed; z-index: 30; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); width: min(calc(100% - 32px), 448px); translate: -50% 0; border-radius: 10px; padding: 10px 14px; color: #fffaf0; background: #153f3d; box-shadow: 0 4px 8px rgb(11 54 52 / 20%); text-align: center; font-size: 0.875rem; font-weight: 700; }
 
 @media (min-width: 421px) {
   .app-header__inner { padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); }
@@ -132,3 +132,14 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); out
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+
+.app-title__icon { width: 1.5em; height: 1.5em; }
+.header-action--lang { width: auto; min-width: 48px; padding-inline: 12px; font: inherit; font-size: 0.875rem; font-weight: 800; }
+.category__icon { width: 1.5rem; height: 1.5rem; flex: none; color: var(--teal-700); }
+.item__emoji { display: inline-flex; width: 1.6em; margin-inline-end: 6px; justify-content: center; vertical-align: middle; }
+.item__emoji svg { color: var(--teal-700); }
+.item__health-marker svg { display: block; }
+.item__delete, .quantity__button { display: inline-flex; align-items: center; justify-content: center; }
+.add-item button, .button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.empty-state__icon svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.9; }
+.empty-state__icon > svg[viewBox='0 0 512 512'] { fill: currentColor; stroke: none; }

@@ -63,3 +63,15 @@ test('share text keeps item quantities and stable formatting', () => {
   assert.match(text, /تفاح X3/)
   assert.match(text, /^🧺 قفتي للتسوق/)
 })
+
+test('French search and share text use translated product names', () => {
+  const matches = searchCategories(createDefaultData(), 'tomate')
+  assert.deepEqual(matches.map((m) => m.items.map((i) => i.name)), [['طماطم'], ['حكة طماطم']])
+  const checkedItems = [{ category: { id: 'ghalla' }, item: { name: 'تفاح', qty: 2 } }]
+  assert.match(buildShareText(checkedItems, new Date(), 'fr'), /^🧺 Ma liste de courses[\s\S]*🍎 Pommes X2/)
+})
+
+test('every default product has a French translation', async () => {
+  const { PRODUCT_FR } = await import('../src/data/translations.js')
+  for (const category of createDefaultData()) for (const item of category.items) assert.ok(PRODUCT_FR[item.name], item.name)
+})

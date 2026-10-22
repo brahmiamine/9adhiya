@@ -1,4 +1,6 @@
 import { CATEGORY_DEFINITIONS, EMOJI_MAP, SEXUAL_HEALTH_FOODS } from '../data/catalog.js'
+import { PRODUCT_FR, UI } from '../data/translations.js'
+import { productName } from './i18n.js'
 
 export const STORAGE_KEY = 'qaimat-shira-data-v1'
 
@@ -162,24 +164,30 @@ export function getCheckedItems(data) {
   return data.flatMap((category) => category.items.filter((item) => item.checked).map((item) => ({ category, item })))
 }
 
+// Searches both the Arabic and the French name, whatever the active language.
+function matches(name, query) {
+  return name.includes(query) || (PRODUCT_FR[name] ?? '').toLowerCase().includes(query.toLowerCase())
+}
+
 export function searchCategories(data, query) {
   const normalized = query.trim()
   if (!normalized) return data.map((category) => ({ category, items: category.items, forceOpen: false }))
   return data
-    .map((category) => ({ category, items: category.items.filter((item) => item.name.includes(normalized)), forceOpen: true }))
+    .map((category) => ({ category, items: category.items.filter((item) => matches(item.name, normalized)), forceOpen: true }))
     .filter(({ items }) => items.length > 0)
 }
 
-export function formatItemName(name) {
-  return EMOJI_MAP[name] ? `${EMOJI_MAP[name]} ${name}` : name
+export function formatItemName(name, lang = 'ar') {
+  const label = productName(name, lang)
+  return EMOJI_MAP[name] ? `${EMOJI_MAP[name]} ${label}` : label
 }
 
 export function isSexualHealthFood(name) {
   return SEXUAL_HEALTH_FOODS.has(name)
 }
 
-export function buildShareText(checkedItems, date = new Date()) {
+export function buildShareText(checkedItems, date = new Date(), lang = 'ar') {
   const dateString = date.toLocaleString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-  const lines = checkedItems.map(({ item }) => `- ${formatItemName(item.name)} X${item.qty || 1}`)
-  return `🧺 قفتي للتسوق - ${dateString}:\n${lines.join('\n')}`
+  const lines = checkedItems.map(({ item }) => `- ${formatItemName(item.name, lang)} X${item.qty || 1}`)
+  return `🧺 ${UI[lang].appTitle} - ${dateString}:\n${lines.join('\n')}`
 }

@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import BasketView from './components/BasketView.jsx'
 import CategoryCard from './components/CategoryCard.jsx'
+import { GiBasket } from './components/icons.jsx'
+import { LANG_KEY, I18nContext, productName, readLang } from './lib/i18n.js'
+import { UI } from './data/translations.js'
 import { STORAGE_KEY, buildShareText, countChecked, createItem, getCheckedItems, loadData, searchCategories } from './lib/shoppingList.js'
 
 function readInitialData() {
@@ -35,6 +38,9 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [status, setStatus] = useState('')
+  const [lang, setLang] = useState(() => readLang(typeof window === 'undefined' ? null : window.localStorage))
+  const t = UI[lang]
+  const i18n = useMemo(() => ({ lang, t }), [lang, t])
   const searchInputRef = useRef(null)
 
   const checkedCount = useMemo(() => countChecked(data), [data])
@@ -42,12 +48,22 @@ export default function App() {
   const visibleCategories = useMemo(() => searchCategories(data, searchQuery), [data, searchQuery])
 
   useEffect(() => {
+    document.documentElement.lang = lang
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
+    document.title = t.docTitle
+    document.querySelector('meta[name="description"]')?.setAttribute('content', t.description)
+    try {
+      window.localStorage.setItem(LANG_KEY, lang)
+    } catch { /* language preference is optional */ }
+  }, [lang, t])
+
+  useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     } catch {
-      setStatus('ما نجمتش نحفظ القائمة على الجهاز')
+      setStatus(t.saveError)
     }
-  }, [data])
+  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!status) return undefined
@@ -80,7 +96,7 @@ export default function App() {
 
   function addItem(categoryId, name) {
     setData((current) => current.map((category) => category.id === categoryId ? { ...category, items: [...category.items, createItem(name)] } : category))
-    setStatus(`${name} تزيدت للقائمة`)
+    setStatus(t.added(productName(name, lang)))
   }
 
   function deleteItem(categoryId, itemId) {
@@ -94,15 +110,15 @@ export default function App() {
       ...category,
       items: category.items.map((item) => ({ ...item, checked: false, qty: 1 })),
     })))
-    setStatus('القفة تفرغت')
+    setStatus(t.cleared)
   }
 
   async function shareBasket() {
-    const text = buildShareText(checkedItems)
+    const text = buildShareText(checkedItems, new Date(), lang)
     if (navigator.share) {
       try {
-        await navigator.share({ text, title: 'قفتي للتسوق' })
-        setStatus('القفة تبعثت')
+        await navigator.share({ text, title: t.appTitle })
+        setStatus(t.sent)
         return
       } catch (error) {
         if (error.name === 'AbortError') return
@@ -110,10 +126,10 @@ export default function App() {
     }
     try {
       await navigator.clipboard.writeText(text)
-      setStatus('القائمة تنسخت، تنجم تلصقها و تبعثها لصاحبك')
+      setStatus(t.copied)
     } catch {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
-      setStatus('حلّينا واتساب باش تبعث القفة')
+      setStatus(t.whatsapp)
     }
   }
 
@@ -138,20 +154,22 @@ export default function App() {
   }
 
   return (
+    <I18nContext.Provider value={i18n}>
     <div className="app-shell">
       <header className="app-header">
         <div className="app-header__inner">
           <div className="app-header__row">
             <h1>
-              <button className="app-title" type="button" onClick={showList} aria-label="ارجع لقائمة الحوايج">
-                <span aria-hidden="true">🧺</span> قفتي للتسوق
+              <button className="app-title" type="button" onClick={showList} aria-label={t.backToList}>
+                <GiBasket className="app-title__icon" aria-hidden="true" /> {t.appTitle}
               </button>
             </h1>
             <div className="header-actions">
-              <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? 'سكر البحث' : 'ابحث في القائمة'} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
+              <button className="header-action header-action--lang" type="button" lang={lang === 'ar' ? 'fr' : 'ar'} aria-label={t.languageLabel} onClick={() => setLang(lang === 'ar' ? 'fr' : 'ar')}>{t.language}</button>
+              <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? t.closeSearch : t.openSearch} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
                 <SearchIcon />
               </button>
-              <button className={`header-action${activeView === 'basket' ? ' header-action--active' : ''}`} type="button" aria-label={activeView === 'basket' ? 'ارجع للقائمة' : checkedCount > 0 ? `شوف القفة، فيها ${checkedCount} حاجة` : 'شوف القفة'} aria-controls="shopping-panel" aria-pressed={activeView === 'basket'} onClick={toggleBasket}>
+              <button className={`header-action${activeView === 'basket' ? ' header-action--active' : ''}`} type="button" aria-label={activeView === 'basket' ? t.backToListShort : checkedCount > 0 ? t.viewBasketCount(checkedCount) : t.viewBasket} aria-controls="shopping-panel" aria-pressed={activeView === 'basket'} onClick={toggleBasket}>
                 <BasketIcon />
                 {checkedCount > 0 && <span className="header-action__count" aria-hidden="true">{checkedCount}</span>}
               </button>
@@ -160,9 +178,9 @@ export default function App() {
 
           {searchOpen && (
             <label className="search" id="search-panel">
-              <span className="sr-only">ابحث في القائمة</span>
+              <span className="sr-only">{t.openSearch}</span>
               <span className="search__icon" aria-hidden="true"><SearchIcon /></span>
-              <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="ابحث عن حاجة..." />
+              <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={t.searchPlaceholder} />
             </label>
           )}
         </div>
@@ -173,7 +191,7 @@ export default function App() {
           visibleCategories.length > 0 ? visibleCategories.map(({ category, items, forceOpen }) => (
             <CategoryCard key={category.id} category={category} items={items} forceOpen={forceOpen} onToggleCategory={toggleCategory} onToggleItem={toggleItem} onDeleteItem={deleteItem} onAddItem={addItem} />
           )) : (
-            <div className="empty-state"><span className="empty-state__icon" aria-hidden="true">⌕</span><h2>ما لقيتش حاجة</h2><p>جرب كلمة أخرى</p></div>
+            <div className="empty-state"><span className="empty-state__icon" aria-hidden="true"><SearchIcon /></span><h2>{t.noResult}</h2><p>{t.tryOther}</p></div>
           )
         ) : (
           <BasketView checkedItems={checkedItems} onToggleItem={toggleItem} onQuantity={changeQuantity} onClear={clearBasket} onShare={shareBasket} />
@@ -182,5 +200,6 @@ export default function App() {
 
       {status && <div className="status" role="status" aria-live="polite">{status}</div>}
     </div>
+    </I18nContext.Provider>
   )
 }
