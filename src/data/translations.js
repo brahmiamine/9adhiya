@@ -11,7 +11,7 @@ export const PRODUCT_FR = {
   'تفاح': 'Pommes', 'بنان': 'Bananes', 'برتقان': 'Oranges', 'عنب': 'Raisin', 'دلاع': 'Pastèque', 'فراز': 'Fraises', 'أناناس': 'Ananas',
   'مانغا': 'Mangue', 'بطيخ': 'Melon', 'توت': 'Myrtilles', 'رمان': 'Grenade', 'كيوي': 'Kiwi', 'أفوكادو': 'Avocat',
   'دجاج': 'Poulet', 'لحم': 'Viande', 'حوت': 'Poisson', 'عضم': 'Œufs', 'كبدة': 'Foie', 'لحم مفروم': 'Viande hachée', 'لحم بقري': 'Bœuf',
-  'لحم دجاج': 'Viande de poulet', 'تن': 'Thon', 'سردينه': 'Sardines', 'شفرات': 'Crevettes', 'سومون': 'Saumon', 'سكالوب': 'Escalope', 'ماكرو': 'Maquereau',
+  'لحم دجاج': 'Viande de poulet', 'تن': 'Thon', 'سردينه': 'Sardines', 'شفرات': 'Crevettes', 'سومون': 'Saumon', 'سكالوب': 'Escalope', 'ماكرو': 'Maquereau', 'فواكه البحر': 'Fruits de mer',
   'حليب': 'Lait', 'جبن مرحي': 'Fromage (jben)', 'زبدة': 'Beurre', 'ياغورت': 'Yaourt', 'لبن': 'Lben', 'فرماج': 'Fromage', 'متزارلا': 'Mozzarella', 'كرام فراش': 'Crème fraîche',
   'خبز': 'Pain', 'مقرونة': 'Pâtes', 'رز': 'Riz', 'كسكسي': 'Couscous', 'فرينة': 'Farine', 'سميد': 'Semoule', 'خبز تركي': 'Pain turc', 'بريك': 'Feuilles de brik',
   'نواصر': 'Nwasser', 'شوفان': "Flocons d'avoine", 'رز كامل': 'Riz complet', 'خبز كامل': 'Pain complet', 'عدس': 'Lentilles', 'كينوا': 'Quinoa',

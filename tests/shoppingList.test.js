@@ -2,10 +2,10 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { STORAGE_KEY, buildShareText, countChecked, createDefaultData, isSexualHealthFood, loadData, migrateData, searchCategories } from '../src/lib/shoppingList.js'
 
-test('the default catalog preserves all eight categories and 105 items', () => {
+test('the default catalog preserves all eight categories and 106 items', () => {
   const data = createDefaultData()
   assert.equal(data.length, 8)
-  assert.equal(data.reduce((total, category) => total + category.items.length, 0), 105)
+  assert.equal(data.reduce((total, category) => total + category.items.length, 0), 106)
   assert.equal(countChecked(data), 0)
   assert.deepEqual(data.find((category) => category.id === 'monadhifat').items.slice(-2).map((item) => item.name), ['لنجات', 'فرشاة أسنان'])
   assert.deepEqual(data.find((category) => category.id === 'moksarat').items.slice(-5).map((item) => item.name), ['قلوب قرع', 'اكاجو', 'سمسم', 'بذور الشيا', 'بذور الكتان'])
