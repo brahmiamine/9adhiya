@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import BasketView from './components/BasketView.jsx'
 import CategoryCard from './components/CategoryCard.jsx'
-import { GiBasket } from './components/icons.jsx'
 import { LANG_KEY, I18nContext, productName, readLang } from './lib/i18n.js'
 import { UI } from './data/translations.js'
 import { STORAGE_KEY, buildShareText, countChecked, createItem, getCheckedItems, loadData, searchCategories } from './lib/shoppingList.js'
@@ -23,15 +22,6 @@ function SearchIcon() {
   )
 }
 
-function BasketIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 9h16l-1.4 10H5.4L4 9Z" />
-      <path d="m8 9 4-5 4 5M9 13v3m6-3v3" />
-    </svg>
-  )
-}
-
 export default function App() {
   const [data, setData] = useState(readInitialData)
   const [activeView, setActiveView] = useState('list')
@@ -44,6 +34,8 @@ export default function App() {
   const searchInputRef = useRef(null)
 
   const checkedCount = useMemo(() => countChecked(data), [data])
+  const totalCount = useMemo(() => data.reduce((total, category) => total + category.items.length, 0), [data])
+  const progress = totalCount ? Math.round((checkedCount / totalCount) * 100) : 0
   const checkedItems = useMemo(() => getCheckedItems(data), [data])
   const visibleCategories = useMemo(() => searchCategories(data, searchQuery), [data, searchQuery])
 
@@ -141,8 +133,8 @@ export default function App() {
     })
   }
 
-  function toggleBasket() {
-    setActiveView((view) => view === 'basket' ? 'list' : 'basket')
+  function showBasket() {
+    setActiveView('basket')
     setSearchOpen(false)
     setSearchQuery('')
   }
@@ -157,33 +149,35 @@ export default function App() {
     <I18nContext.Provider value={i18n}>
     <div className="app-shell">
       <header className="app-header">
-        <div className="app-header__inner">
-          <div className="app-header__row">
-            <h1>
-              <button className="app-title" type="button" onClick={showList} aria-label={t.backToList}>
-                <GiBasket className="app-title__icon" aria-hidden="true" /> {t.appTitle}
-              </button>
-            </h1>
-            <div className="header-actions">
-              <button className="header-action header-action--lang" type="button" lang={lang === 'ar' ? 'fr' : 'ar'} aria-label={t.languageLabel} onClick={() => setLang(lang === 'ar' ? 'fr' : 'ar')}>{t.language}</button>
-              <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? t.closeSearch : t.openSearch} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
-                <SearchIcon />
-              </button>
-              <button className={`header-action${activeView === 'basket' ? ' header-action--active' : ''}`} type="button" aria-label={activeView === 'basket' ? t.backToListShort : checkedCount > 0 ? t.viewBasketCount(checkedCount) : t.viewBasket} aria-controls="shopping-panel" aria-pressed={activeView === 'basket'} onClick={toggleBasket}>
-                <BasketIcon />
-                {checkedCount > 0 && <span className="header-action__count" aria-hidden="true">{checkedCount}</span>}
-              </button>
+        <div className="app-header__row">
+          <h1>
+            <button className="app-title" type="button" onClick={showList} aria-label={t.backToList}>
+              <span className="app-title__icon" aria-hidden="true">🧺</span><span>{t.appTitle}</span>
+            </button>
+          </h1>
+          <div className="header-actions">
+            <button className="header-action header-action--lang" type="button" lang={lang === 'ar' ? 'fr' : 'ar'} aria-label={t.languageLabel} onClick={() => setLang(lang === 'ar' ? 'fr' : 'ar')}>{t.language}</button>
+            <button className={`header-action${searchOpen ? ' header-action--active' : ''}`} type="button" aria-label={searchOpen ? t.closeSearch : t.openSearch} aria-controls="search-panel" aria-expanded={searchOpen} onClick={toggleSearch}>
+              <SearchIcon />
+            </button>
+          </div>
+        </div>
+
+        {searchOpen && (
+          <label className="search" id="search-panel">
+            <span className="sr-only">{t.openSearch}</span>
+            <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={t.searchPlaceholder} />
+          </label>
+        )}
+
+        {activeView === 'list' && (
+          <div className="progress">
+            <div className="progress__labels"><span>{t.progress}</span><span className="progress__count">{checkedCount} / {totalCount}</span></div>
+            <div className="progress__track" role="progressbar" aria-label={t.progressLabel(checkedCount, totalCount)} aria-valuemin={0} aria-valuemax={totalCount} aria-valuenow={checkedCount}>
+              <div className="progress__bar" style={{ width: `${progress}%` }} />
             </div>
           </div>
-
-          {searchOpen && (
-            <label className="search" id="search-panel">
-              <span className="sr-only">{t.openSearch}</span>
-              <span className="search__icon" aria-hidden="true"><SearchIcon /></span>
-              <input ref={searchInputRef} type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={t.searchPlaceholder} />
-            </label>
-          )}
-        </div>
+        )}
       </header>
 
       <main className="content" id="shopping-panel">
@@ -191,12 +185,22 @@ export default function App() {
           visibleCategories.length > 0 ? visibleCategories.map(({ category, items, forceOpen }) => (
             <CategoryCard key={category.id} category={category} items={items} forceOpen={forceOpen} onToggleCategory={toggleCategory} onToggleItem={toggleItem} onDeleteItem={deleteItem} onAddItem={addItem} />
           )) : (
-            <div className="empty-state"><span className="empty-state__icon" aria-hidden="true"><SearchIcon /></span><h2>{t.noResult}</h2><p>{t.tryOther}</p></div>
+            <div className="empty-state"><span className="empty-state__icon" aria-hidden="true">🔎</span><h2>{t.noResult}</h2><p>{t.tryOther}</p></div>
           )
         ) : (
-          <BasketView checkedItems={checkedItems} onToggleItem={toggleItem} onQuantity={changeQuantity} onClear={clearBasket} onShare={shareBasket} />
+          <BasketView checkedItems={checkedItems} onQuantity={changeQuantity} onClear={clearBasket} onShare={shareBasket} onBack={showList} />
         )}
       </main>
+
+      {activeView === 'list' && (
+        <div className="fab-wrap">
+          <button className="fab" type="button" aria-label={checkedCount > 0 ? t.viewBasketCount(checkedCount) : t.viewBasket} onClick={showBasket}>
+            <span className="fab__icon" aria-hidden="true">🧺</span>
+            <span>{t.viewBasket}</span>
+            <span className="fab__count" aria-hidden="true">{checkedCount}</span>
+          </button>
+        </div>
+      )}
 
       {status && <div className="status" role="status" aria-live="polite">{status}</div>}
     </div>

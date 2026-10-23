@@ -29,6 +29,7 @@ export const UI = {
   ar: {
     appTitle: 'قفتي للتسوق', backToList: 'ارجع لقائمة الحوايج', closeSearch: 'سكر البحث', openSearch: 'ابحث في القائمة',
     viewBasket: 'شوف القفة', viewBasketCount: (n) => `شوف القفة، فيها ${n} حاجة`, backToListShort: 'ارجع للقائمة',
+    progress: 'اللي تشرى', progressLabel: (n, total) => `${n} من ${total} حاجة متشرية`, basketTitle: 'القفة',
     searchPlaceholder: 'ابحث عن حاجة...', noResult: 'ما لقيتش حاجة', tryOther: 'جرب كلمة أخرى',
     basketEmpty: 'قفتك فارغة', basketHint: 'اختار اللي حاجتك فيه من القائمة', basketLabel: 'الحوايج اللي في القفة',
     share: 'شارك القفة', clear: 'فرّغ القفة', addPlaceholder: 'زيد حاجة...', add: 'زيد', addTo: (c) => `زيد حاجة في ${c}`,
@@ -43,6 +44,7 @@ export const UI = {
   fr: {
     appTitle: 'Ma liste de courses', backToList: 'Retour à la liste', closeSearch: 'Fermer la recherche', openSearch: 'Rechercher dans la liste',
     viewBasket: 'Voir le panier', viewBasketCount: (n) => `Voir le panier, ${n} article${n > 1 ? 's' : ''}`, backToListShort: 'Retour à la liste',
+    progress: 'Articles cochés', progressLabel: (n, total) => `${n} sur ${total} articles cochés`, basketTitle: 'Panier',
     searchPlaceholder: 'Chercher un produit...', noResult: 'Aucun résultat', tryOther: 'Essayez un autre mot',
     basketEmpty: 'Votre panier est vide', basketHint: 'Choisissez vos produits dans la liste', basketLabel: 'Produits du panier',
     share: 'Partager le panier', clear: 'Vider le panier', addPlaceholder: 'Ajouter un produit...', add: 'Ajouter', addTo: (c) => `Ajouter un produit dans ${c}`,
