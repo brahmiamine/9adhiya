@@ -3,6 +3,7 @@ import BasketView from './components/BasketView.jsx'
 import CategoryCard from './components/CategoryCard.jsx'
 import { LANG_KEY, I18nContext, productName, readLang } from './lib/i18n.js'
 import { UI } from './data/translations.js'
+import { createSync } from './lib/sync.js'
 import { STORAGE_KEY, buildShareText, countChecked, createItem, getCheckedItems, loadData, searchCategories } from './lib/shoppingList.js'
 
 function readInitialData() {
@@ -32,6 +33,9 @@ export default function App() {
   const t = UI[lang]
   const i18n = useMemo(() => ({ lang, t }), [lang, t])
   const searchInputRef = useRef(null)
+  const dataRef = useRef(data)
+  const syncRef = useRef(null)
+  dataRef.current = data
 
   const checkedCount = useMemo(() => countChecked(data), [data])
   const totalCount = useMemo(() => data.reduce((total, category) => total + category.items.length, 0), [data])
@@ -55,7 +59,19 @@ export default function App() {
     } catch {
       setStatus(t.saveError)
     }
+    syncRef.current?.changed()
   }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // La liste est partagée via le serveur (MariaDB) ; la copie locale reste utilisable hors connexion.
+  useEffect(() => {
+    const sync = createSync({
+      getData: () => dataRef.current,
+      setData: (next) => { dataRef.current = next; setData(next) },
+    })
+    syncRef.current = sync
+    sync.start()
+    return () => { sync.stop(); syncRef.current = null }
+  }, [])
 
   useEffect(() => {
     if (!status) return undefined

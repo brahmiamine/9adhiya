@@ -1,0 +1,26 @@
+# Déploiement sur le VPS : `docker compose up -d --build` depuis ce dossier, avec un fichier .env (voir .env.example).
+# Le conteneur sert le site (/) et l'API (/api) ; il rejoint le réseau Docker de Caddy et lit MariaDB via le socket Unix de l'hôte.
+name: 9adhiya-api
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    container_name: 9adhiya-api
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /run/mysqld:/run/mysqld
+    networks:
+      - proxy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK:-clubika_internal}

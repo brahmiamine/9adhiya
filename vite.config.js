@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// GitHub Pages sert l'app sous /9adhiya/ ; le conteneur Docker la sert à la racine (VITE_BASE=/).
+const base = process.env.VITE_BASE ?? '/9adhiya/'
+
 export default defineConfig({
   plugins: [
     react(),
@@ -13,12 +16,12 @@ export default defineConfig({
         'icons/favicon-32.png',
       ],
       manifest: {
-        id: '/9adhiya/',
+        id: base,
         name: 'قفتي للتسوق — قائمة الشراء',
         short_name: 'قفتي',
         description: 'قائمة شراء تونسية تحفظ قفتك على هاتفك وتخليك تشاركها بسهولة.',
-        start_url: '/9adhiya/',
-        scope: '/9adhiya/',
+        start_url: base,
+        scope: base,
         display: 'standalone',
         orientation: 'portrait-primary',
         background_color: '#0b3634',
@@ -38,5 +41,5 @@ export default defineConfig({
       },
     }),
   ],
-  base: '/9adhiya/',
+  base,
 })

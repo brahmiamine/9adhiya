@@ -1,0 +1,13 @@
+{
+  "name": "9adhiya-api",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
+  "dependencies": {
+    "mysql2": "3.24.5"
+  }
+}

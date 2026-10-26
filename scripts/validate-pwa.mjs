@@ -24,8 +24,9 @@ await Promise.all(requiredFiles.map(async (path) => {
 }))
 
 const manifest = JSON.parse(await readFile('dist/manifest.webmanifest', 'utf8'))
-assert.equal(manifest.start_url, '/9adhiya/')
-assert.equal(manifest.scope, '/9adhiya/')
+const base = process.env.VITE_BASE ?? '/9adhiya/'
+assert.equal(manifest.start_url, base)
+assert.equal(manifest.scope, base)
 assert.equal(manifest.display, 'standalone')
 assert.equal(manifest.orientation, 'portrait-primary')
 assert.equal(manifest.lang, 'ar-TN')
