@@ -32,9 +32,9 @@ Le navigateur appelle l'API de `server/` (Node.js 24, sans framework), qui stock
 - **Pas d'authentification** (choix assumé) : quiconque connaît l'adresse peut modifier la liste. Garde-fous : validation stricte de la forme et de la taille, limite d'écritures par adresse IP, et **historique des 200 dernières versions** (`shopping_list_history`) pour restaurer une liste en cas de problème.
 - La première synchronisation d'un appareil **fusionne la liste déjà présente sur son navigateur** avec celle du serveur (rien n'est perdu).
 - Schéma : `server/schema.sql`, appliqué automatiquement au démarrage. Configuration : `server/.env` (voir `server/.env.example`).
-- Le conteneur (`server/Dockerfile`, `docker compose up -d --build` dans `server/`) sert le site à la racine et l'API sous `/api` ; le front cible par défaut `https://9adhiya.clubika.com/api` (`VITE_API_URL` pour une autre API).
+- Le conteneur (`server/Dockerfile`, `docker compose up -d --build` dans `server/`) sert le site à la racine et l'API sous `/api` ; le front cible par défaut `https://panier.clubika.com/api` (`VITE_API_URL` pour une autre API).
 - Tests : `npm test` (liste, fusion, synchronisation avec un faux serveur) et `cd server && npm test` (API sur une vraie base MariaDB de test : `TEST_DB_NAME`, `TEST_DB_USER`, `TEST_DB_PASSWORD`, `TEST_DB_SOCKET` ou `TEST_DB_HOST`).
 
 ## Déploiement automatique
 
-Chaque commit poussé sur `main` met l'application à jour : GitHub Actions exécute les tests et publie GitHub Pages, et le serveur (`9adhiya.clubika.com`) vérifie chaque minute si `main` a changé (`app-deploy.timer`), reconstruit l'image Docker, teste `/api/health` et revient automatiquement à la version précédente en cas d'échec. Journal : `~/deploy/deploy.log` sur le serveur.
+Chaque commit poussé sur `main` met l'application à jour : GitHub Actions exécute les tests et publie GitHub Pages, et le serveur (`panier.clubika.com`) vérifie chaque minute si `main` a changé (`app-deploy.timer`), reconstruit l'image Docker, teste `/api/health` et revient automatiquement à la version précédente en cas d'échec. Journal : `~/deploy/deploy.log` sur le serveur.

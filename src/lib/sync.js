@@ -4,7 +4,7 @@ import { createDefaultData, migrateData } from './shoppingList.js'
 import { mergeLists } from './merge.js'
 
 // Surchargeable via VITE_API_URL (voir .env.example).
-export const API_URL = (import.meta.env?.VITE_API_URL ?? 'https://9adhiya.clubika.com/api').replace(/\/+$/, '')
+export const API_URL = (import.meta.env?.VITE_API_URL ?? 'https://panier.clubika.com/api').replace(/\/+$/, '')
 export const SYNC_KEY = 'qaimat-shira-sync-v1'
 
 const POLL_MS = 20_000
